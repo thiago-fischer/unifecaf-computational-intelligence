@@ -125,3 +125,114 @@ Desvio padrao : 1.03%
 ### Gap medio     : 0.39%
 # 21.	Resposta: “A heuristica gulosa e boa o suficiente para este problema? Em quais situacoes voce usaria ela e em quais preferiria gastar mais tempo para achar o otimo?”
 ### Sim, a heuristica chegou no mesmo resultado do valor otimo varias vezes nos teste feitos. Usaria a heuristica quando a situaão tivesse varias opções de escolha, pois ela iria calcular o melhor valor em um tempo menor. Utilizaria força-bruta quando as opções de escolha fosse menores, pois ela traria a melhor opção dentro das disponiveis.
+
+
+# LABORATÓRIO 4
+
+## Relatório — Atividade 4: Modelagem de um Problema Real
+
+## Otimização de um cardápio com restrições de custo e calorias
+
+### 1. Descrição do problema
+
+O problema escolhido consiste em montar um cardápio para cinco dias utilizando uma base de 25 ingredientes. Cada prato deve ser composto por exatamente três ingredientes: uma proteína, um carboidrato e um vegetal.
+
+Cada ingrediente possui um preço, uma quantidade de calorias e um tipo. No experimento, esses valores são gerados de forma aleatória dentro de faixas definidas para cada categoria. O objetivo é encontrar pratos que atendam às restrições nutricionais e financeiras e, entre as combinações válidas, selecionar as cinco de menor custo para formar o cardápio.
+
+A meta energética definida é de 700 kcal por prato, com tolerância de 50 kcal para mais ou para menos. Portanto, cada prato válido deve possuir entre 650 e 750 kcal. Além disso, o preço total de cada prato não pode ultrapassar R$ 40,00.
+
+Embora o comentário inicial do notebook mencione a menor quantidade de calorias, no código implementado as calorias funcionam como uma restrição. A função objetivo efetivamente utilizada é a minimização do custo dos pratos.
+
+### 2. Modelagem formal
+
+Uma solução candidata para um prato pode ser representada por um vetor binário de 25 posições:
+
+`x = (x1, x2, ..., x25)`
+
+Cada posição representa um ingrediente. Quando `xi = 1`, o ingrediente está presente no prato; quando `xi = 0`, ele não está.
+
+Como o prato deve conter exatamente três ingredientes, uma solução candidata válida precisa satisfazer:
+
+`Σ xi = 3`
+
+Além disso, deve existir exatamente um ingrediente de cada categoria: proteína, carboidrato e vegetal.
+
+Para formar o cardápio completo, a solução final é uma lista contendo cinco pratos válidos. O código permite que um mesmo ingrediente apareça em mais de um prato, desde que cada combinação de três ingredientes seja diferente.
+
+### 3. Espaço de busca
+
+Com 25 ingredientes representados de forma binária, existem:
+
+`2^25 = 33.554.432`
+
+subconjuntos possíveis.
+
+O algoritmo exaustivo implementado percorre todas essas configurações e descarta imediatamente aquelas que não possuem exatamente três ingredientes.
+
+Considerando somente subconjuntos com três ingredientes, existem:
+
+`C(25, 3) = 2.300`
+
+combinações.
+
+Como os 25 ingredientes são distribuídos ciclicamente entre as três categorias, são geradas 9 proteínas, 8 carboidratos e 8 vegetais. Assim, antes de aplicar as restrições de calorias e preço, existem:
+
+`9 × 8 × 8 = 576`
+
+combinações que possuem exatamente uma proteína, um carboidrato e um vegetal.
+
+Esse resultado mostra que a representação escolhida para a busca exaustiva percorre um espaço muito maior do que o conjunto de combinações que realmente interessam ao problema.
+
+### 4. Função objetivo
+
+A função objetivo é minimizar o custo total do cardápio.
+
+Para um prato `p`, o custo é dado pela soma dos preços dos ingredientes selecionados:
+
+`C(p) = Σ preço_i × xi`
+
+Depois de encontrar todas as combinações válidas, o algoritmo exaustivo ordena os pratos pelo preço e seleciona os cinco mais baratos.
+
+Assim, para o cardápio com cinco pratos, busca-se minimizar:
+
+`C_total = C(p1) + C(p2) + C(p3) + C(p4) + C(p5)`
+
+### 5. Restrições
+
+Cada prato deve possuir exatamente três ingredientes, sendo uma proteína, um carboidrato e um vegetal.
+
+A quantidade total de calorias deve permanecer dentro da faixa definida:
+
+`650 ≤ calorias do prato ≤ 750`
+
+O custo máximo permitido para cada prato é:
+
+`preço do prato ≤ R$ 40,00`
+
+Também é necessário que existam pelo menos cinco combinações válidas para que seja possível formar o cardápio completo. Caso isso não aconteça, as funções retornam `None`.
+
+### 6. Estratégias de otimização utilizadas
+
+Foram comparadas duas estratégias.
+
+A primeira é a busca exaustiva. Ela percorre todas as 33.554.432 configurações binárias possíveis, filtra aquelas com três ingredientes e depois aplica as restrições de tipo, calorias e preço. Como todas as possibilidades são consideradas, a estratégia consegue identificar os pratos de menor custo dentro do espaço pesquisado.
+
+A segunda é uma heurística. Antes de gerar as combinações, ela cria grupos de ingredientes candidatos de acordo com uma distribuição aproximada das 700 kcal: 50% para carboidratos, 40% para proteínas e 10% para vegetais. Em seguida, testa somente as combinações formadas pelos ingredientes que passaram por esse filtro.
+
+Essa redução torna a busca muito mais rápida, porém pode eliminar ingredientes que participariam de uma boa solução quando analisados em conjunto. Por isso, a solução heurística não possui garantia de ser ótima.
+
+### 7. Classificação do problema
+
+Em sua forma geral, o problema pode ser considerado difícil, pois envolve uma quantidade combinatória de escolhas e múltiplas restrições simultâneas. À medida que o número de ingredientes, dias e critérios nutricionais aumenta, a quantidade de soluções possíveis pode crescer rapidamente.
+
+Nesta versão simplificada, entretanto, cada prato possui exatamente três ingredientes. Isso reduz o conjunto relevante a 2.300 combinações de três elementos, das quais 576 já respeitam a divisão de tipos. Portanto, a instância atual é tratável computacionalmente.
+
+O comportamento exponencial observado na implementação exaustiva ocorre principalmente porque o algoritmo percorre todos os `2^25` subconjuntos antes de filtrar os que possuem três elementos. Uma versão que gerasse diretamente as combinações de uma proteína, um carboidrato e um vegetal reduziria bastante esse custo.
+
+Assim, a versão generalizada do planejamento de cardápios se aproxima de problemas combinatórios difíceis, enquanto a instância específica utilizada no laboratório ainda pode ser resolvida exatamente em tempo viável.
+
+### 8. Conclusão
+
+O experimento permitiu observar na prática a diferença entre uma solução exata e uma solução heurística. A busca exaustiva apresentou maior custo computacional, mas encontrou um cardápio mais barato. A heurística reduziu drasticamente o número de combinações analisadas e o tempo de execução, porém encontrou uma solução de custo maior.
+
+O principal aprendizado é que algoritmos de otimização frequentemente envolvem um compromisso entre qualidade da solução e tempo de processamento. A busca exata pode ser adequada para espaços pequenos, enquanto heurísticas se tornam úteis quando o crescimento do espaço de busca torna a exploração completa inviável.
