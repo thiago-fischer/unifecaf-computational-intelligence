@@ -1,0 +1,572 @@
+[
+  {
+    "populacao": 10,
+    "semente": 0,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 10,
+    "avaliacoes": 2010,
+    "segundos": 0.04139739996753633
+  },
+  {
+    "populacao": 10,
+    "semente": 1,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 6,
+    "avaliacoes": 2010,
+    "segundos": 0.013657899922691286
+  },
+  {
+    "populacao": 10,
+    "semente": 2,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 9,
+    "avaliacoes": 2010,
+    "segundos": 0.018229000037536025
+  },
+  {
+    "populacao": 10,
+    "semente": 3,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 9,
+    "avaliacoes": 2010,
+    "segundos": 0.016322600073181093
+  },
+  {
+    "populacao": 10,
+    "semente": 4,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 14,
+    "avaliacoes": 2010,
+    "segundos": 0.01742509996984154
+  },
+  {
+    "populacao": 10,
+    "semente": 5,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 14,
+    "avaliacoes": 2010,
+    "segundos": 0.014082300011068583
+  },
+  {
+    "populacao": 10,
+    "semente": 6,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 8,
+    "avaliacoes": 2010,
+    "segundos": 0.01723100000526756
+  },
+  {
+    "populacao": 10,
+    "semente": 7,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 18,
+    "avaliacoes": 2010,
+    "segundos": 0.012035600026138127
+  },
+  {
+    "populacao": 10,
+    "semente": 8,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 9,
+    "avaliacoes": 2010,
+    "segundos": 0.01514060003682971
+  },
+  {
+    "populacao": 10,
+    "semente": 9,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 17,
+    "avaliacoes": 2010,
+    "segundos": 0.01625300000887364
+  },
+  {
+    "populacao": 30,
+    "semente": 0,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 6,
+    "avaliacoes": 6030,
+    "segundos": 0.018243400030769408
+  },
+  {
+    "populacao": 30,
+    "semente": 1,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 9,
+    "avaliacoes": 6030,
+    "segundos": 0.021525699994526803
+  },
+  {
+    "populacao": 30,
+    "semente": 2,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 3,
+    "avaliacoes": 6030,
+    "segundos": 0.014330000034533441
+  },
+  {
+    "populacao": 30,
+    "semente": 3,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 7,
+    "avaliacoes": 6030,
+    "segundos": 0.01739839999936521
+  },
+  {
+    "populacao": 30,
+    "semente": 4,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 8,
+    "avaliacoes": 6030,
+    "segundos": 0.013102600001730025
+  },
+  {
+    "populacao": 30,
+    "semente": 5,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 7,
+    "avaliacoes": 6030,
+    "segundos": 0.016264599980786443
+  },
+  {
+    "populacao": 30,
+    "semente": 6,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 7,
+    "avaliacoes": 6030,
+    "segundos": 0.01948190003167838
+  },
+  {
+    "populacao": 30,
+    "semente": 7,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 7,
+    "avaliacoes": 6030,
+    "segundos": 0.015265099937096238
+  },
+  {
+    "populacao": 30,
+    "semente": 8,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 6,
+    "avaliacoes": 6030,
+    "segundos": 0.015955900074914098
+  },
+  {
+    "populacao": 30,
+    "semente": 9,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 5,
+    "avaliacoes": 6030,
+    "segundos": 0.013525799964554608
+  },
+  {
+    "populacao": 50,
+    "semente": 0,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 10,
+    "avaliacoes": 10050,
+    "segundos": 0.017329099937342107
+  },
+  {
+    "populacao": 50,
+    "semente": 1,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 6,
+    "avaliacoes": 10050,
+    "segundos": 0.015528099960647523
+  },
+  {
+    "populacao": 50,
+    "semente": 2,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 4,
+    "avaliacoes": 10050,
+    "segundos": 0.018293200060725212
+  },
+  {
+    "populacao": 50,
+    "semente": 3,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 8,
+    "avaliacoes": 10050,
+    "segundos": 0.013130599982105196
+  },
+  {
+    "populacao": 50,
+    "semente": 4,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 6,
+    "avaliacoes": 10050,
+    "segundos": 0.017732399981468916
+  },
+  {
+    "populacao": 50,
+    "semente": 5,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 4,
+    "avaliacoes": 10050,
+    "segundos": 0.014810999971814454
+  },
+  {
+    "populacao": 50,
+    "semente": 6,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 8,
+    "avaliacoes": 10050,
+    "segundos": 0.024070900049991906
+  },
+  {
+    "populacao": 50,
+    "semente": 7,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 5,
+    "avaliacoes": 10050,
+    "segundos": 0.015266799950040877
+  },
+  {
+    "populacao": 50,
+    "semente": 8,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 9,
+    "avaliacoes": 10050,
+    "segundos": 0.014153100084513426
+  },
+  {
+    "populacao": 50,
+    "semente": 9,
+    "pesos": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "soma": 1.0,
+    "temperatura": 30.0,
+    "penalidade": 0.0,
+    "fitness": 30.0,
+    "iteracao_otimo": 7,
+    "avaliacoes": 10050,
+    "segundos": 0.02297110005747527
+  }
+]
