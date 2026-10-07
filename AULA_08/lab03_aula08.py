@@ -1,14 +1,22 @@
-"""ACO do zero sobre arestas, com custo dos caminhos entre pares críticos."""
-from time import perf_counter
-from comum import np, plt, preparar, salvar_csv, salvar_json, salvar_figura, BASE, SEMENTES
+"""ACO do zero: dados sintéticos e custo de caminhos entre pares críticos."""
+import numpy as np
 
+# Matriz sintética em ms: seed 808, inteiros [2,30], triângulo superior + transposta.
+D = np.array([
+    [0, 14, 15, 12, 11, 21, 9, 11, 10, 9],
+    [14, 0, 18, 8, 7, 13, 10, 6, 3, 27],
+    [15, 18, 0, 10, 24, 6, 14, 12, 22, 7],
+    [12, 8, 10, 0, 15, 27, 20, 18, 10, 15],
+    [11, 7, 24, 15, 0, 6, 28, 6, 4, 28],
+    [21, 13, 6, 27, 6, 0, 7, 5, 25, 7],
+    [9, 10, 14, 20, 28, 7, 0, 5, 20, 29],
+    [11, 6, 12, 18, 6, 5, 5, 0, 28, 17],
+    [10, 3, 22, 10, 4, 25, 20, 28, 0, 2],
+    [9, 27, 7, 15, 28, 7, 29, 17, 2, 0],
+], dtype=float)
 
-def carregar():
-    d = np.loadtxt(BASE / 'dados' / 'latencias.csv', delimiter=',')
-    pares = np.loadtxt(BASE / 'dados' / 'pares_criticos.csv', delimiter=',', skiprows=1)
-    assert d.shape == (10, 10) and np.allclose(d, d.T)
-    assert np.all(np.diag(d) == 0) and np.all(d[np.triu_indices(10, 1)] > 0)
-    return d, pares
+# Pares e pesos sintéticos (origem, destino, peso adimensional).
+PARES = np.array([[0, 5, 3], [1, 8, 2], [2, 9, 3], [3, 7, 2], [4, 6, 1], [0, 9, 2]], dtype=float)
 
 
 class UnionFind:
@@ -110,88 +118,53 @@ def executar(d, pares, seed, formigas=30, iteracoes=200):
     return melhor, valor, historico
 
 
-def desenhar_topologia(melhor, d):
-    """Layout em níveis da árvore, para evitar cruzamentos e rótulos sobrepostos."""
-    vizinhos = [[] for _ in range(len(d))]
-    for u, v in melhor['arestas']:
-        vizinhos[u].append(v)
-        vizinhos[v].append(u)
-    pos, folhas = {}, [0]
-
-    def posicionar(u, pai, nivel):
-        filhos = sorted(v for v in vizinhos[u] if v != pai)
-        for v in filhos:
-            posicionar(v, u, nivel+1)
-        if filhos:
-            x = float(np.mean([pos[v][0] for v in filhos]))
-        else:
-            x = folhas[0]
-            folhas[0] += 1
-        pos[u] = np.array([x, -nivel], dtype=float)
-
-    posicionar(9, -1, 0)
-    plt.figure(figsize=(9, 6))
-    for u, v in melhor['arestas']:
-        linha = np.array([pos[u], pos[v]])
-        plt.plot(linha[:, 0], linha[:, 1], color='#56788a', lw=2)
-        meio = (pos[u]+pos[v])/2
-        plt.text(*meio, f'{d[u,v]:g} ms', fontsize=9, ha='center',
-                 bbox=dict(facecolor='white', alpha=.95, edgecolor='none'))
-    pontos = np.array([pos[i] for i in range(len(d))])
-    plt.scatter(pontos[:, 0], pontos[:, 1], s=650, color='#183d56', zorder=3)
-    for i in range(len(d)):
-        plt.text(*pos[i], str(i), color='white', ha='center', va='center', zorder=4)
-    plt.title(f"Melhor árvore ACO — custo {melhor['custo']:.1f} ms ponderados")
-    plt.xlim(pontos[:, 0].min()-.5, pontos[:, 0].max()+.5)
-    plt.ylim(pontos[:, 1].min()-.5, .5)
-    plt.axis('off')
-    salvar_figura('lab03_topologia.png')
-
-
 def main():
-    preparar()
-    d, pares = carregar()
-    resumo, linhas, curvas, baselines = [], [], [], []
-    for seed in SEMENTES:
-        inicio = perf_counter()
-        arvore, valor, h = executar(d, pares, seed)
-        tempo = perf_counter()-inicio
-        rng = np.random.default_rng(1000+seed)
-        referencias = [construir(d, np.ones_like(d), rng, aleatoria=True) for _ in range(100)]
-        custos = [custo(a, d, pares) for a in referencias]
-        baselines.extend(dict(semente=seed, referencia=i, custo=c) for i, c in enumerate(custos))
-        adj = np.zeros_like(d, dtype=int)
-        for u, v in arvore:
-            adj[u, v] = adj[v, u] = 1
-        assert adj.sum() == 18 and np.array_equal(adj, adj.T)
-        resumo.append(dict(semente=seed, arestas=arvore, adjacencia=adj.tolist(), custo=valor,
-                           referencia_arestas=referencias[0], referencia=custos[0],
-                           referencia_media=float(np.mean(custos)),
-                           referencia_desvio=float(np.std(custos, ddof=1)),
-                           ganho=100*(custos[0]-valor)/custos[0],
-                           ganho_media=100*(np.mean(custos)-valor)/np.mean(custos), segundos=tempo))
-        curvas.append(h)
-        linhas.extend(dict(semente=seed, iteracao=i+1, custo=c) for i, c in enumerate(h))
-    curvas = np.array(curvas)
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5), layout='constrained')
-    media, sd = curvas.mean(axis=0), curvas.std(axis=0, ddof=1)
-    axes[0].plot(range(1, 201), media, label='ACO: média de 10 execuções')
-    axes[0].fill_between(range(1, 201), media-sd, media+sd, alpha=.2, label='±1 desvio-padrão')
-    axes[0].set(xlabel='Iteração', ylabel='Custo dos pares críticos (ms ponderados)', title='Convergência do ACO')
-    axes[0].legend()
-    axes[1].boxplot([[r['custo'] for r in resumo], [b['custo'] for b in baselines]],
-                    tick_labels=['ACO (10)', 'Árvores aleatórias (1000)'])
-    axes[1].set(ylabel='Custo dos pares críticos (ms ponderados)', title='Distribuição dos custos finais')
-    salvar_figura('lab03_comparacao.png')
-    melhor = min(resumo, key=lambda x: x['custo'])
-    desenhar_topologia(melhor, d)
-    salvar_json('lab03_resultados.json', resumo)
-    salvar_csv('lab03_historico.csv', linhas)
-    salvar_csv('lab03_referencias.csv', baselines)
-    np.savetxt(BASE / 'saidas' / 'lab03_adjacencia.csv', melhor['adjacencia'], fmt='%d', delimiter=',')
-    print('ACO: 10 execuções. Melhor custo:', melhor['custo'])
-    print('Matriz de adjacência final (switches 0 a 9):')
-    print(np.array(melhor['adjacencia']))
+    d, pares = D, PARES
+    assert d.shape == (10, 10) and np.allclose(d, d.T)
+    assert np.all(np.diag(d) == 0) and np.all(d[np.triu_indices(10, 1)] > 0)
+    print("## Lab 03 — ACO\n")
+    print("Matriz D sintética em ms, switches 0–9. Não foi fornecida no enunciado. "
+          "Origem: default_rng(808), matriz 10×10 de inteiros entre 2 e 30; "
+          "triângulo superior estrito somado à transposta.\n```text")
+    print(d.astype(int))
+    print("```\n\nPares críticos e pesos sintéticos (origem, destino, peso):\n```text")
+    print(pares.astype(int))
+    print("```\n\nCusto = soma dos caminhos únicos na árvore entre os pares críticos, "
+          "ponderados pelos pesos. Unidade: ms ponderados; não é a soma das nove arestas.\n")
+    print("30 formigas, 200 iterações, alpha=1, beta=2, tau inicial=1, rho=0.2, Q=100. "
+          "Union-Find impede ciclos; cada árvore tem nove arestas e dez switches conectados. "
+          "Arestas elegíveis são sorteadas com peso tau/D². Pela leitura literal do enunciado, "
+          "evaporação e depósito são aplicados apenas às arestas da melhor árvore da iteração: "
+          "tau=0.8*tau+100/custo. Demais arestas ficam inalteradas.\n")
+    print("Cada referência aleatória usa semente 1000+s e sorteia arestas elegíveis sem preferência "
+          "por latência. Isso não equivale à distribuição uniforme de todas as árvores possíveis. "
+          "Ganho = 100*(referência-ACO)/referência.\n")
+    print("| Semente | Custo ACO | Custo aleatório | Ganho (%) |")
+    print("| --- | --- | --- | --- |")
+    resultados = []
+    for seed in range(10):
+        arvore, valor, _ = executar(d, pares, seed)
+        referencia = construir(d, np.ones_like(d), np.random.default_rng(1000+seed), aleatoria=True)
+        aleatorio = custo(referencia, d, pares)
+        ganho = 100*(aleatorio-valor)/aleatorio
+        resultados.append((valor, seed, arvore, referencia))
+        print(f"| {seed} | {valor:.1f} | {aleatorio:.1f} | {ganho:.2f} |")
+    valor, seed, arvore, referencia = min(resultados, key=lambda r: r[0])
+    adj = np.zeros((10, 10), dtype=int)
+    for u, v in arvore:
+        adj[u, v] = adj[v, u] = 1
+    assert adj.sum() == 18 and np.array_equal(adj, adj.T)
+    print(f"\nMatriz de adjacência da melhor árvore, semente {seed}, custo {valor:g}:\n\n```text")
+    print(adj)
+    print("```\n\nArestas da árvore ACO (u, v):\n\n```text")
+    print([(int(u),int(v)) for u,v in arvore])
+    print("```\n\nArestas da referência aleatória da mesma semente:\n\n```text")
+    print([(int(u),int(v)) for u,v in referencia])
+    print("```\n\nA matriz é simétrica, diagonal zero e tem 18 entradas iguais a 1 "
+          "(nove arestas). A conectividade e a ausência de ciclos foram verificadas. "
+          "O ganho vale para essa instância e referência; não certifica ótimo global. "
+          "O ACO usa 6.000 árvores por execução, enquanto a referência usa uma; "
+          "não é uma comparação sob igual orçamento.\n")
 
 
 if __name__ == '__main__':

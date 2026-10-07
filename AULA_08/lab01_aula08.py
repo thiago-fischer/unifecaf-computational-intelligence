@@ -1,6 +1,5 @@
 """PSO contínuo do zero: objetivo linear e temperaturas individuais constantes."""
-from time import perf_counter
-from comum import np, plt, preparar, salvar_csv, salvar_json, salvar_figura, BASE, SEMENTES
+import numpy as np
 
 C = np.array([42., 35., 58., 30., 50., 65.])
 
@@ -50,39 +49,36 @@ class PSO:
 
 
 def main():
-    preparar()
-    resumo, linhas = [], []
-    plt.figure(figsize=(9, 5))
-    for tamanho in (10, 30, 50):
-        curvas = []
-        for seed in SEMENTES:
-            inicio = perf_counter()
-            w, h, hp, hg = PSO(tamanho, seed).executar()
-            tempo = perf_counter() - inicio
-            curvas.append(h)
-            atingiu = np.flatnonzero(h <= 30 + 1e-6)
-            resumo.append(dict(populacao=tamanho, semente=seed, pesos=w.tolist(),
-                               soma=float(w.sum()), temperatura=float(w @ C),
-                               penalidade=float(penalidade(C)), fitness=float(h[-1]),
-                               iteracao_otimo=int(atingiu[0]) if len(atingiu) else None,
-                               avaliacoes=tamanho*201, segundos=tempo))
-            linhas.extend(dict(populacao=tamanho, semente=seed, iteracao=i, gbest=float(f))
-                          for i, f in enumerate(h))
-            np.savez_compressed(BASE / 'saidas' / f'pso_memoria_n{tamanho}_s{seed}.npz',
-                                pbest=hp, gbest=hg)
-        curvas = np.array(curvas)
-        media, desvio = curvas.mean(axis=0), curvas.std(axis=0, ddof=1)
-        plt.plot(media, label=f'{tamanho} partículas')
-        plt.fill_between(range(201), media-desvio, media+desvio, alpha=.13)
-    plt.axhline(30, color='black', ls='--', lw=1, label='Ótimo analítico = 30 °C')
-    plt.xlabel('Iteração (0 = inicialização)')
-    plt.ylabel('Melhor fitness global')
-    plt.title('PSO: média e desvio-padrão entre 10 execuções')
-    plt.legend()
-    salvar_figura('lab01_convergencia.png')
-    salvar_csv('lab01_historico.csv', linhas)
-    salvar_json('lab01_resultados.json', resumo)
-    print('PSO: 30 execuções concluídas. Melhor fitness:', min(r['fitness'] for r in resumo))
+    print("## Lab 01 — PSO contínuo\n")
+    print("C = [42, 35, 58, 30, 50, 65]; 200 iterações; inércia 0.7; c1=c2=1.5. "
+          "Dez sementes (0–9) para cada população. Posições negativas são zeradas e "
+          "normalizadas; vetor nulo recebe pesos uniformes. Históricos de pbest e gbest "
+          "são mantidos em memória e retornados por PSO.executar().\n")
+    print("Hipótese térmica: T_i=C_i, pois não foi fornecida relação entre carga e temperatura. "
+          "Fitness = W@C + 10*sum(max(T_i-75,0)**2). A penalidade é externa e fica zero "
+          "com os coeficientes fornecidos; para [80,77] °C, ela vale 290.\n")
+    assert penalidade([80., 77.]) == 290.
+    curvas = {}
+    print("| Partículas | Melhor W (AZ1 a AZ6) | Soma | Fitness | Iteração média até 30 °C |")
+    print("| --- | --- | --- | --- | --- |")
+    for n in (10, 30, 50):
+        resultados = [PSO(n, seed).executar() for seed in range(10)]
+        curvas[n] = np.array([r[1] for r in resultados])
+        w, h, _, _ = min(resultados, key=lambda r: r[1][-1])
+        atingiu = [np.flatnonzero(r[1] <= 30+1e-6) for r in resultados]
+        iteracoes = [int(a[0]) for a in atingiu if len(a)]
+        media = f"{np.mean(iteracoes):.1f}" if iteracoes else "não atingiu"
+        print(f"| {n} | {w.tolist()} | {w.sum():.10f} | {h[-1]:.4f} | {media} ({len(iteracoes)}/10) |")
+    print("\nEvolução do melhor fitness: média de dez execuções, em iterações selecionadas.\n")
+    print("| Iteração | 10 partículas | 30 partículas | 50 partículas |")
+    print("| --- | --- | --- | --- |")
+    for i in (0, 1, 2, 5, 10, 20, 50, 100, 200):
+        print(f"| {i} | " + " | ".join(f"{curvas[n][:,i].mean():.6f}" for n in curvas) + " |")
+    print("\nO mínimo analítico é 30 °C, obtido ao concentrar a carga na AZ4. "
+          "Não há capacidade máxima por AZ ou distribuição mínima no enunciado; "
+          "por isso esse resultado é coerente com o objetivo linear. A penalidade não "
+          "modela aquecimento dinâmico sob a hipótese adotada. "
+          "As avaliações de candidatos são N×201: 2.010, 6.030 e 10.050, respectivamente.\n")
 
 
 if __name__ == '__main__':

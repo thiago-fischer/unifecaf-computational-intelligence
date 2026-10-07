@@ -1,14 +1,30 @@
-"""AG binário do zero; dados sintéticos explicitados em dados/README.md."""
-import csv
-from time import perf_counter
-from comum import np, plt, preparar, salvar_csv, salvar_json, salvar_figura, BASE, SEMENTES
+"""AG binário do zero; serviços sintéticos, pois a tabela não consta do enunciado."""
+import numpy as np
+
+# (nome, valor de negócio, RAM em GB, CPU em cores): dados sintéticos fixos.
+SERVICOS = [
+    ('autenticacao', 35, 2, 1),
+    ('gateway', 45, 2, 1.5),
+    ('cache', 28, 4, 0.5),
+    ('telemetria', 18, 1, 0.5),
+    ('antifraude', 55, 3, 2),
+    ('recomendacao', 48, 4, 2),
+    ('busca', 42, 3, 1.5),
+    ('notificacao', 20, 1, 0.5),
+    ('pagamentos', 60, 3, 2),
+    ('catalogo', 32, 2, 1),
+    ('compressao', 22, 1, 1.5),
+    ('analise_eventos', 38, 4, 1),
+    ('sessoes', 25, 2, 0.5),
+    ('auditoria', 16, 1, 0.5),
+    ('roteamento', 30, 2, 1),
+]
 
 
 def carregar():
-    with (BASE / 'dados' / 'microsservicos.csv').open(encoding='utf-8') as f:
-        dados = list(csv.DictReader(f))
-    matriz = np.array([[float(s[k]) for k in ('valor', 'ram_gb', 'cpu_cores')] for s in dados])
-    return dados, matriz
+    nomes = [s[0] for s in SERVICOS]
+    matriz = np.array([s[1:] for s in SERVICOS], dtype=float)
+    return nomes, matriz
 
 
 def avaliar(pop, matriz, estrategia):
@@ -71,51 +87,55 @@ def executar(matriz, estrategia, semente, tamanho=100, geracoes=200):
     return melhor, historico
 
 
-def otimo_exato(matriz):
-    pop = ((np.arange(2**len(matriz))[:, None] >> np.arange(len(matriz))) & 1)
-    fit, _, _ = avaliar(pop, matriz, 'A')
-    return pop[np.argmax(fit)], float(fit.max())
-
-
 def main():
-    preparar()
-    dados, matriz = carregar()
-    exato, valor = otimo_exato(matriz)
-    resumo, linhas, historicos = [], [], {}
+    nomes, matriz = carregar()
+    print("## Lab 02 — AG binário\n")
+    print("Tabela sintética fixa dos 15 microsserviços (não fornecida pelo professor).\n")
+    print("| ID | Serviço | Valor | RAM (GB) | CPU (cores) |")
+    print("| --- | --- | --- | --- | --- |")
+    for i, (nome, v, r, c) in enumerate(SERVICOS, 1):
+        print(f"| {i} | {nome} | {v} | {r} | {c} |")
+    print("\nLimites: 16 GB e 8 cores. População 100, 200 gerações, torneio de 3 sem reposição, "
+          "crossover de ponto único com probabilidade 0.8, mutação por bit de 1/15 e um elite. "
+          "Melhor solução viável arquivada separadamente. Dez sementes (0–9); A e B iniciam "
+          "com a mesma população para cada semente.\n")
+    print("A: fitness=V se viável, zero se violar RAM ou CPU. "
+          "B: fitness=V-20*max(RAM-16,0)-40*max(CPU-8,0). "
+          "Coeficientes de penalidade escolhidos previamente; não há reparação para isolar "
+          "a comparação entre as duas penalidades exigidas.\n")
+    resultados = {}
     for estrategia in ('A', 'B'):
-        historicos[estrategia] = []
-        for seed in SEMENTES:
-            inicio = perf_counter()
-            solucao, h = executar(matriz, estrategia, seed)
-            tempo = perf_counter()-inicio
-            v, r, c = solucao @ matriz
-            historicos[estrategia].append(h)
-            resumo.append(dict(estrategia=estrategia, semente=seed, individuo=solucao.tolist(),
-                               servicos=[s['nome'] for i, s in enumerate(dados) if solucao[i]],
-                               valor=float(v), ram=float(r), cpu=float(c), gap=valor-float(v),
-                               diversidade_media=float(np.mean([x['diversidade'] for x in h])),
-                               diversidade_final=h[-1]['diversidade'], segundos=tempo))
-            linhas.extend(dict(estrategia=estrategia, semente=seed, **x) for x in h)
-    fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout='constrained')
-    for ax, metrica, titulo in zip(axes.flat, ('media', 'desvio', 'diversidade', 'fracao_viavel'),
-                                  ('Média do fitness da população', 'Desvio-padrão do fitness da população',
-                                   'Diversidade: Hamming normalizada', 'Fração de indivíduos viáveis')):
-        for estrategia, hs in historicos.items():
-            valores = np.array([[x[metrica] for x in h] for h in hs])
-            m, s = valores.mean(axis=0), valores.std(axis=0, ddof=1)
-            ax.plot(m, label=f'Estratégia {estrategia}')
-            ax.fill_between(range(201), m-s, m+s, alpha=.15)
-        ax.set_title(titulo)
-        ax.set_xlabel('Geração')
-        ax.legend()
-    fig.suptitle('AG: curvas médias de 10 execuções; faixas = desvio entre execuções')
-    salvar_figura('lab02_comparacao.png')
-    salvar_csv('lab02_historico.csv', linhas)
-    salvar_json('lab02_resultados.json',
-                {'execucoes': resumo, 'otimo_exato': valor, 'individuo_exato': exato.tolist()})
-    print('AG: 20 execuções. Ótimo exato:', valor)
-    for estrategia in ('A', 'B'):
-        print(estrategia, 'melhor valor:', max(r['valor'] for r in resumo if r['estrategia'] == estrategia))
+        resultados[estrategia] = [executar(matriz, estrategia, seed) for seed in range(10)]
+    print("Média e desvio-padrão do fitness dentro da população em cada geração "
+          "(desvio com divisor N), depois promediados entre as dez sementes. "
+          "Diversidade = Hamming média normalizada entre pares distintos; "
+          "não é inferida do desvio-padrão do fitness.\n")
+    print("| Geração | Média A | DP A | Diversidade A | Média B | DP B | Diversidade B |")
+    print("| --- | --- | --- | --- | --- | --- | --- |")
+    for g in (0, 1, 2, 5, 10, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200):
+        valores = [np.mean([h[g][k] for _, h in resultados[e]])
+                   for e in ('A', 'B') for k in ('media', 'desvio', 'diversidade')]
+        print(f"| {g} | " + " | ".join(f"{v:.4f}" for v in valores) + " |")
+    divs, melhores = {}, {}
+    print("\n| Estratégia | Valor final médio ± DP entre sementes | Diversidade média (gerações 0–200) |")
+    print("| --- | --- | --- |")
+    for e, rs in resultados.items():
+        valores = [float((x @ matriz)[0]) for x, _ in rs]
+        divs[e] = float(np.mean([h[g]['diversidade'] for _, h in rs for g in range(201)]))
+        melhores[e] = max(valores)
+        print(f"| {e} | {np.mean(valores):.2f} ± {np.std(valores, ddof=1):.2f} | {divs[e]:.4f} |")
+    for e, rs in resultados.items():
+        seed, (x, _) = max(enumerate(rs), key=lambda r: (r[1][0] @ matriz)[0])
+        v, ram, cpu = x @ matriz
+        print(f"\nMelhor solução {e}, semente {seed}: `{''.join(map(str,x))}` (IDs 1–15). "
+              f"Valor {v:g}, RAM {ram:g}/16 GB, CPU {cpu:g}/8 cores.")
+        print("\nServiços: " + ", ".join(nomes[i] for i in range(15) if x[i]) + ".")
+    print(f"\nA estratégia {max(divs,key=divs.get)} preservou maior diversidade média nesta instância.")
+    print("As estratégias empataram no melhor valor viável." if melhores['A']==melhores['B'] else
+          f"A estratégia {max(melhores,key=melhores.get)} encontrou o maior valor viável.")
+    print("As escalas de fitness diferem por causa da penalidade; a qualidade final é comparada "
+          "pelo valor de negócio viável. A conclusão é descritiva, condicionada aos dados "
+          "sintéticos e coeficientes adotados.\n")
 
 
 if __name__ == '__main__':
